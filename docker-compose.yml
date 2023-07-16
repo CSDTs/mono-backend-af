@@ -13,6 +13,39 @@ services:
       - DATA_PREFIX=/app
       - SERVICE_PATH=/api/v1/addresses/
 
+  eeio_service:
+    build:
+      context: ./eco-service
+      dockerfile: Dockerfile.eeio-api
+    # command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./eco-service/:/app/
+      - ./eco-service/data/:/data/
+    ports:
+      - 8003:8000
+    environment:
+      - DATA_PREFIX=/app
+      - SERVICE_PATH=/api/v1/eeio/
+
+  eco_service:
+    build:
+      context: ./eco-service
+      dockerfile: Dockerfile.eco-social-api
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./eco-service/:/app/
+      - ./eco-service/data/:/data/
+    ports:
+      - 8002:8000
+    environment:
+      - DATA_PREFIX=/app
+      - SERVICE_PATH=/api/v1/eco/
+      - USEEIO_API_HOST= http://eeio_service:7070/api
+    depends_on:
+      - eeio_service
+
+
+
   nginx:
     image: nginx:latest
     ports:

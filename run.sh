@@ -5,19 +5,37 @@ source .env
 set +o allexport
 
 
-directory="./address-service"  # Specify the directory you want to check
+addressDir="./address-service" 
+ecoDir="./eco-service"
 
-if [ -d "$directory/.git" ]; then
-  # Directory contains .git folder
-  echo "Performing git pull in $directory..."
-  cd "$directory"
+if [ -d "$addressDir/.git" ]; then
+
+  echo "Performing git pull in $addressDir..."
+  cd "$addressDir"
   git pull
   cd ..
 else
-  # Directory doesn't contain .git folder
-  echo "Performing git clone in $directory..."
-  git clone -b main https://$GITLAB_USERNAME:$GITLAB_TOKEN@gitlab.si.umich.edu/csdts-umich/af_address_scraping.git "$directory"
+
+  echo "Performing git clone in $addressDir..."
+  git clone -b main https://$GITLAB_USERNAME:$GITLAB_TOKEN@gitlab.si.umich.edu/csdts-umich/af_address_scraping.git "$addressDir"
 fi
 
-docker-compose build
-docker-compose up
+
+if [ -d "$ecoDir/.git" ]; then
+  echo "Performing git pull in $ecoDir..."
+  cd "$ecoDir"
+  git pull
+  cd ..
+else
+  echo "Performing git clone in $ecoDir..."
+  git clone -b main https://$GITLAB_USERNAME:$GITLAB_TOKEN@gitlab.si.umich.edu/csdts-umich/artisanalfutures-eco-social-calc.git "$ecoDir"
+  cd eco-service/data/USEEIO && git lfs install && git lfs pull
+  cd ../../
+fi
+
+
+
+
+
+# docker-compose build
+# docker-compose up

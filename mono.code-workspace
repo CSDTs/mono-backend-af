@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../address_api"
+		},
+		{
+			"path": "../eco-social-api"
 		}
 	]
 }
