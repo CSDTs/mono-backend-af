@@ -105,6 +105,14 @@ services:
       MYSQL_PASSWORD: wordpress
       MYSQL_RANDOM_ROOT_PASSWORD: "1"
 
+  routing_service:
+    build: ./routing-service
+    command: osrm-routed --algorithm mld -t 32 --port 8000 /data/michigan-latest.osrm
+    ports:
+      - 8005:8000
+    environment:
+      - DATA_PREFIX=/app
+      - SERVICE_PATH=/api/v1/routing
   nginx:
     image: nginx:latest
     ports:
@@ -117,6 +125,7 @@ services:
       - eco_service
       - product_service
       - wordpress
+      - routing_service
 
 volumes:
   backend:
