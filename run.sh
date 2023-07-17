@@ -31,7 +31,7 @@ else
   echo "Performing git clone in $ecoDir..."
   git clone -b mono https://$GITLAB_USERNAME:$GITLAB_TOKEN@gitlab.si.umich.edu/csdts-umich/artisanalfutures-eco-social-calc.git "$ecoDir"
   cd eco-service/data/USEEIO && git lfs install && git lfs pull
-  cd ../../
+  cd ../../../
 fi
 
 if [ -d "$productDir/.git" ]; then
