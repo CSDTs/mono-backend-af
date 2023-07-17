@@ -3,3 +3,4 @@ address-service
 backend
 eco-service
 product-service
+neo4j
