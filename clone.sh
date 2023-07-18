@@ -57,10 +57,10 @@ else
 fi
 
 
-if which docker-compose >/dev/null 2>&1; then
-    echo "docker-compose is installed."
-    docker-compose build
-    docker-compose up
-else
-    echo "docker-compose is not installed."
-fi
+# if which docker-compose >/dev/null 2>&1; then
+#     echo "docker-compose is installed."
+#     docker-compose build
+#     docker-compose up
+# else
+#     echo "docker-compose is not installed."
+# fi
