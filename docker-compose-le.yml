@@ -1,0 +1,11 @@
+version: "3.7" 
+services:
+  letsencrypt:
+    image: certbot/certbot:latest
+    command: sh -c "certbot certonly --expand --webroot -w /tmp/acme_challenge -d data.artisanalfutures.org --text --agree-tos --email ahunn@umich.edu --rsa-key-size 4096 --verbose --keep-until-expiring --preferred-challenges=http"
+    entrypoint: ""
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /tmp/acme_challenge:/tmp/acme_challenge
+    environment:
+      - TERM=xterm
