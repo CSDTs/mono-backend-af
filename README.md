@@ -80,7 +80,70 @@ Next, add the location to the `nginx_config.conf`.
 
 Finally, just add the folder to the gitignore to avoid having to add other repository code.
 
-### Helpful Links
+### Notes
+
+#### Wordpress
+
+Currently using a temp database on the same server instance. So if we plan on changing WordPress to something else, updating the database, or something else destructive, make sure to backup the wordpress backend! This also includes the database. Use the Backup Migration app by Migrate. It seems to be the best in what it does.
+
+The theme needs to be modified for JWT auth.
+
+```php
+define( 'GRAPHQL_JWT_AUTH_SECRET_KEY', 'replace_with_random_number_string' );
+
+
+add_action('rest_api_init', 'add_ACF_fields_to_jwt_auth_response');
+
+function add_ACF_fields_to_jwt_auth_response() {
+    // Here 'user' is the type of object being retrieved.
+    register_rest_field('user',
+        'acf', //New Field Name in JSON RESPONSEs
+        array(
+            'get_callback'    => 'get_user_acf_fields', // custom function name
+            'update_callback' => null,
+            'schema'          => null,
+            )
+    );
+}
+
+function get_user_acf_fields($user, $field_name, $request) {
+    return get_fields('user_'.$user['id']);
+}
+
+add_filter('jwt_auth_token_before_dispatch', 'add_ACF_data_to_jwt_auth_response', 10, 2);
+
+function add_ACF_data_to_jwt_auth_response($data, $user) {
+    $response = rest_ensure_response($data);
+    $user_data = $response->get_data();
+
+    // Here you retrieve the ACF data that you added to the user response.
+    $user_data['acf'] = get_user_acf_fields(array('id' => $user->ID), '', null);
+
+    $response->set_data($user_data);
+
+    return $response;
+}
+
+ // Security Custom plugin (but adding it here just in case)
+defined('ABSPATH') or die("Unauthorized access");
+add_filter('jwt_auth_token_before_dispatch', 'add_user_role_response', 10, 2);
+function add_user_role_response($data, $user){
+        $data['user_id'] = $user->id;
+        return $data;
+}
+
+```
+
+##### Plugins needed:
+
+- ACF to REST API
+- Advanced Custom Fields
+- Custom Post Type UI
+- JWT Authentication for WP-API
+- Simple-JWT-Login
+- GraphQL
+
+#### Helpful Links
 
 - [Setup SSL via Docker](https://www.programonaut.com/setup-ssl-with-docker-nginx-and-lets-encrypt/)
 - [Setup SSL via Certbot server install](https://macdonaldchika.medium.com/how-to-install-tls-ssl-on-docker-nginx-container-with-lets-encrypt-5bd3bad1fd48)

@@ -78,14 +78,15 @@ services:
     ports:
       - 8004:8000
 
+  # TODO: Add JWT authentication keys (JWT Authentication for WP REST API plugin)
   wordpress:
     image: wordpress:latest
     restart: always
     environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_HOST: ${WP_DB_HOST}
+      WORDPRESS_DB_USER: ${WP_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WP_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WP_DB_NAME}
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_SITEURL', 'https://${DOMAIN}');
         define('WP_HOME', 'https://${DOMAIN}');
