@@ -8,6 +8,7 @@ set +o allexport
 addressDir="./address-service" 
 ecoDir="./eco-service"
 productDir="./product-service"
+routingDir="./routing-service"
 
 if [ -d "$addressDir/.git" ]; then
 
@@ -45,5 +46,21 @@ else
 fi
 
 
-docker-compose build
-docker-compose up
+if [ -d "$routingDir/.git" ]; then
+  echo "Performing git pull in $routingDir..."
+  cd "$routingDir"
+  git pull
+  cd ..
+else
+  echo "Performing git clone in $routingDir..."
+  git clone -b main https://$GITHUB_ACCESS@github.com/CSDTs/af-routing-service.git  "$routingDir"
+fi
+
+
+if which docker-compose >/dev/null 2>&1; then
+    echo "docker-compose is installed."
+    docker-compose build
+    docker-compose up
+else
+    echo "docker-compose is not installed."
+fi

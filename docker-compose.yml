@@ -42,7 +42,6 @@ services:
     environment:
       - DATA_PREFIX=/app
 
-
   eco_service:
     build:
       context: ./eco-service
@@ -88,11 +87,10 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_SITEURL', 'https://data.artisanalfutures.org');
-        define('WP_HOME', 'https://data.artisanalfutures.org');
+        define('WP_SITEURL', 'https://${DOMAIN}');
+        define('WP_HOME', 'https://${DOMAIN}');
     volumes:
       - ./backend:/var/www/html
-  
     depends_on:
       - db
 
@@ -110,38 +108,32 @@ services:
     command: osrm-routed --algorithm mld -t 32 --port 8000 /data/michigan-latest.osrm
     ports:
       - 8005:8000
-    environment:
-      - DATA_PREFIX=/app
-      - SERVICE_PATH=/api/v1/routing
-  
+
   nginx:
     image: nginx:latest
     restart: unless-stopped
     ports:
       - 80:80
       - 443:443
-    # command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     volumes:
       - ./nginx_config.conf:/etc/nginx/conf.d/default.conf
       - ./backend:/var/www/html
-      # - /etc/letsencrypt:/etc/letsencrypt
-      # - /tmp/acme_challenge:/tmp/acme_challenge
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     depends_on:
       - address_service
       - eco_service
       - product_service
-      - wordpress
       - routing_service
-  
+      - wordpress
+
   certbot:
     image: certbot/certbot
     container_name: certbot
-    volumes: 
+    volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --email ${EMAIL} -d ${DOMAIN} --agree-tos
+    command: certonly --webroot -w /var/www/certbot --dry-run --email ${EMAIL} -d ${DOMAIN} --agree-tos
     depends_on:
       - nginx
 volumes:
