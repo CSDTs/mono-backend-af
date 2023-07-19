@@ -9,6 +9,7 @@ addressDir="./address-service"
 ecoDir="./eco-service"
 productDir="./product-service"
 routingDir="./routing-service"
+assessmentDir="./assessment-service"
 
 if [ -d "$addressDir/.git" ]; then
 
@@ -54,6 +55,17 @@ if [ -d "$routingDir/.git" ]; then
 else
   echo "Performing git clone in $routingDir..."
   git clone -b main https://$GITHUB_ACCESS@github.com/CSDTs/af-routing-service.git  "$routingDir"
+fi
+
+
+if [ -d "$assessmentDir/.git" ]; then
+  echo "Performing git pull in $assessmentDir..."
+  cd "$assessmentDir"
+  git pull
+  cd ..
+else
+  echo "Performing git clone in $assessmentDir..."
+  git clone -b mono https://$GITLAB_USERNAME:$GITLAB_TOKEN@gitlab.si.umich.edu/csdts-umich/csdt-misc/product-search-with-eco-social.git "$assessmentDir"
 fi
 
 

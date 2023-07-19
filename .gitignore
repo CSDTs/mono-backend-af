@@ -6,3 +6,5 @@ product-service
 neo4j
 certbot
 routing-service
+assessment-service
+
