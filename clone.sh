@@ -10,7 +10,7 @@ ecoDir="./eco-service"
 productDir="./product-service"
 routingDir="./routing-service"
 assessmentDir="./assessment-service"
-
+vroomDir="./vroom-service"
 if [ -d "$addressDir/.git" ]; then
 
   echo "Performing git pull in $addressDir..."
@@ -68,6 +68,16 @@ else
   git clone -b mono https://$GITLAB_USERNAME:$GITLAB_TOKEN@gitlab.si.umich.edu/csdts-umich/csdt-misc/product-search-with-eco-social.git "$assessmentDir"
 fi
 
+
+if [ -d "$vroomDir/.git" ]; then
+  echo "Performing git pull in $vroomDir..."
+  cd "$vroomDir"
+  git pull
+  cd ..
+else
+  echo "Performing git clone in $vroomDir..."
+   git clone -b main https://$GITHUB_ACCESS@github.com/CSDTs/vroom-routing-service-af.git "$vroomDir"
+fi
 
 # if which docker-compose >/dev/null 2>&1; then
 #     echo "docker-compose is installed."

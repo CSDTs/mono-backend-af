@@ -119,9 +119,9 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_DATABASE: ${WP_DB_NAME}
+      MYSQL_USER: ${WP_DB_USER}
+      MYSQL_PASSWORD: ${WP_DB_PASSWORD}
       MYSQL_RANDOM_ROOT_PASSWORD: "1"
 
   routing_service:
@@ -129,6 +129,19 @@ services:
     command: osrm-routed --algorithm mld -t 32 --port 8000 /data/michigan-latest.osrm
     ports:
       - 8005:8000
+
+  optimization_service:
+    build: ./optimization-service
+    entrypoint: /bin/bash
+    command: /docker-entrypoint.sh
+    volumes:
+      - ./optimization-service/vroom-conf:/conf/:rw
+    ports:
+      - 3000:3000
+    environment:
+      - VROOM_ROUTER=osrm
+    depends_on:
+      - routing_service
 
   nginx:
     image: nginx:latest
@@ -147,6 +160,7 @@ services:
       - eco_service
       - product_service
       - routing_service
+      - optimization_service
       - wordpress
 
   certbot:
